@@ -1,0 +1,9 @@
+# .cursorrules - Universal Micro-Learning & Gamification Architecture (Zhuyin Edition)
+
+## Core Architectural Rules
+1. Zero-Backend & Zero-CORS: 專案必須保證能在瀏覽器以 file:/// 協議雙擊離線執行，禁止任何外部伺服器或外部 CDN 依賴。
+2. Idempotent Scheduling: 每日排程必須使用 YYYY-MM-DD + Grade/Level 快取，同一天重新整理或切換分頁絕不可跳題。
+3. Daily Interaction Anti-Abuse: 每日養成動作必須同時滿足 completedToday === true 且 lastWateredDate !== todayKey，同日嚴格限額 1 次。
+4. Defensiveness in Storage: 從 LocalStorage 取出數值時，必須全面使用 Number(val) || 0 做型別防禦，杜絕 [object Object] 汙染。
+5. Pure CSS Keyframe Animation: 粒子與物體形變只使用 GPU 加速屬性（transform、opacity），粒子生命週期結束必須即時呼叫 .remove() 銷毀 DOM。
+6. Zero-Asset Audio: 發音採用原生 window.speechSynthesis (zh-TW)，音效採用 Web Audio API OscillatorNode 動態合成。

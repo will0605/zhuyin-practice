@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <title>ㄅㄆㄇ 注音符號微學習與星際火箭探險系統</title>
+  <link rel="stylesheet" href="css/style.css?v=20261107_v10">
+</head>
+<body>
+
+  <!-- 頂部導覽列 -->
+  <header class="navbar">
+    <div class="nav-container">
+      <div class="brand">
+        <div class="brand-icon">🚀</div>
+        <div>
+          <h1 class="brand-title">ㄅㄆㄇ 快樂學注音</h1>
+          <div class="brand-subtitle">通用微學習與星際火箭探險基地</div>
+        </div>
+      </div>
+
+      <!-- 導覽頁籤 -->
+      <nav>
+        <ul class="nav-tabs">
+          <li><button class="nav-tab-btn active" data-tab="home">🏠 今日首頁</button></li>
+          <li><button class="nav-tab-btn" data-tab="lessons">📖 各課專項</button></li>
+          <li><button class="nav-tab-btn" data-tab="dictation">🎧 易錯聽寫</button></li>
+          <li><button class="nav-tab-btn" data-tab="learn">✏️ 學習閉環</button></li>
+          <li><button class="nav-tab-btn" data-tab="space">🚀 星際探險</button></li>
+          <li><button class="nav-tab-btn" data-tab="library">📖 注音寶庫</button></li>
+          <li><button class="nav-tab-btn" data-tab="report">📊 學習報告</button></li>
+        </ul>
+      </nav>
+
+      <!-- 等級切換與成長快顯 -->
+      <div class="nav-status">
+        <select id="levelSelector" class="level-selector" title="切換學習難度">
+          <option value="1">Level 1: 基礎聲母 (8符號)</option>
+          <option value="2">Level 2: 進階聲母 (13符號)</option>
+          <option value="3">Level 3: 單韻母與介音 (7符號)</option>
+          <option value="4">Level 4: 複韻母與鼻韻 (9符號)</option>
+          <option value="5">Level 5: 四聲調與基礎二拼</option>
+          <option value="6">Level 6: 115-1各課字詞與三拼 (79單元)</option>
+        </select>
+        <div class="user-chips">
+          <span id="navPlanets">🪐 0</span>
+          <span id="navEnergy">⚡ 0</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- 主內容區 -->
+  <main class="main-content">
+
+    <!-- 1. 首頁視圖 (HomeView) -->
+    <section id="homeView" class="view-section active">
+      <div class="banner-card">
+        <div>
+          <h2 class="banner-title" id="homeBannerGreeting">哈囉，太空注音飛行員！</h2>
+          <p class="banner-desc" id="homeBannerDesc">今日已為探險號準備好 5 個注音單元！每天完成學習注入能源，解鎖每日專屬點火升空特權！</p>
+        </div>
+        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+          <button id="startStudyBtn" class="banner-action-btn">🚀 開始今日挑戰</button>
+          <button id="goToLessonsBtn" class="banner-action-btn" style="background: linear-gradient(135deg, #8B5CF6, #6D28D9);">📖 一年級各課測驗</button>
+          <button id="goToDictationBtn" class="banner-action-btn" style="background: linear-gradient(135deg, #EC4899, #BE185D);">🎧 易錯聽寫特訓</button>
+        </div>
+      </div>
+
+      <!-- 歷史補做日期選擇控制列 -->
+      <div class="card catch-up-bar" style="margin-bottom: 16px; padding: 14px 20px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+          <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+            <label for="catchUpDatePicker" style="font-size: 14px; font-weight: 800; color: #334155;">📅 學習與補做日期：</label>
+            <input type="date" id="catchUpDatePicker" class="date-picker-input">
+            <button id="returnTodayBtn" class="btn-return-today" style="display: none;">↩️ 返回今日</button>
+          </div>
+          <div id="catchUpStatusNotice" class="catch-up-notice" style="display: none;">
+            ⚡ 歷史補做模式：完成 5 個單元補做可補充 <strong>+10 點航行能源</strong>！
+          </div>
+        </div>
+
+        <!-- 未施作可補做快速清單 (已完成的不需補做，只顯示未施作與未完成) -->
+        <div id="pendingCatchUpContainer" style="margin-top: 12px; padding-top: 10px; border-top: 1px dashed #E2E8F0; display: flex; align-items: center; flex-wrap: wrap; gap: 8px;">
+          <span style="font-size: 13px; font-weight: 800; color: #B45309;">⏳ 待補做清單（當天未施作）：</span>
+          <div id="pendingCatchUpChips" style="display: flex; flex-wrap: wrap; gap: 8px;">
+            <!-- 動態生成未施作的日期晶片 -->
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <h3 id="dailyUnitsCardTitle" style="font-size: 18px; font-weight: 800;">📅 今日推薦目標單元 (冪等排程 5 項目)</h3>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <button id="quickTomorrowBtn" class="btn-preview-link">🔮 預覽明天</button>
+            <span id="curriculumLevelTag" style="font-size: 12px; font-weight: 700; color: var(--primary); background: var(--primary-light); padding: 4px 10px; border-radius: 12px;">Level 1</span>
+          </div>
+        </div>
+        
+        <div id="todayUnitsGrid" class="units-grid">
+          <!-- 動態載入 5 個單元晶片 -->
+        </div>
+
+        <div class="progress-box">
+          <div class="progress-header">
+            <span id="progressBoxTitle">今日火箭能源充能進度</span>
+            <span id="dailyProgressText">0 / 5 單元完成</span>
+          </div>
+          <div class="progress-bar-bg">
+            <div id="dailyProgressBar" class="progress-bar-fill" style="width: 0%;"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 明日目標預覽卡片 (Tomorrow Preview Card) -->
+      <div class="card tomorrow-preview-card" id="tomorrowPreviewCard" style="margin-top: 18px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; cursor: pointer;" id="tomorrowPreviewHeader">
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <span style="font-size: 26px;">🔮</span>
+            <div>
+              <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                <h3 id="tomorrowCardTitle" style="font-size: 17px; font-weight: 800; color: #3730A3;">明日目標單元預覽（搶先聽・先預習）</h3>
+                <span id="tomorrowDateBadge" style="font-size: 11px; font-weight: 800; color: #4338CA; background: #E0E7FF; padding: 2px 8px; border-radius: 12px;">明天目標</span>
+              </div>
+              <p style="font-size: 12px; color: #64748B; margin-top: 2px;">搶先認識明天的 5 個新目標！點擊卡片可試聽自然發音，明天學習更輕鬆！</p>
+            </div>
+          </div>
+          <button id="tomorrowToggleBtn" class="btn-tomorrow-toggle">展開預覽 ▾</button>
+        </div>
+
+        <div id="tomorrowUnitsContainer" style="display: none; margin-top: 16px; padding-top: 16px; border-top: 1px dashed #C7D2FE;">
+          <div id="tomorrowUnitsGrid" class="units-grid">
+            <!-- 動態渲染明天的 5 個單元晶片 (可點擊聽音預習) -->
+          </div>
+          <div style="margin-top: 14px; padding: 10px 14px; background: rgba(255, 255, 255, 0.9); border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
+            <span style="font-size: 12px; color: #4338CA; font-weight: 700;">
+              💡 預習小提示：點擊卡片即可試聽明天發音，明天 00:00 自動解鎖正式挑戰與火箭升空特權！
+            </span>
+            <button id="speakAllTomorrowBtn" class="btn-secondary" style="font-size: 12px; padding: 6px 14px; color: #4338CA; border-color: #A5B4FC; font-weight: 800;">
+              📢 一鍵連續朗讀明天單元
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. 學習閉環視圖 (LearnView) -->
+    <section id="learnView" class="view-section">
+      <div class="card quiz-card">
+        <div class="quiz-header">
+          <span id="quizTypeBadge" class="quiz-type-badge">題型 1: 概念辨識</span>
+          <span id="quizProgressText" class="quiz-step-count">第 1 / 15 題</span>
+        </div>
+
+        <div id="quizSubject" class="quiz-subject-display">ㄅ</div>
+        <h3 id="quizTitle" class="quiz-title">請問「ㄅ」是哪一個的注音？</h3>
+        <p id="quizHint" class="quiz-hint">肚子大大像包子 ㄅ</p>
+
+        <!-- 選擇題 / 聽音題選項區 -->
+        <div id="quizOptionsContainer" class="options-grid">
+          <!-- 動態渲染選項按鈕 -->
+        </div>
+
+        <!-- 拼音積木區塊 (Assembly) -->
+        <div id="assemblyContainer" style="display: none;">
+          <div id="assemblySlots" class="assembly-slots-area"></div>
+          <div id="assemblyBlocks" class="assembly-blocks-pool"></div>
+          <div class="assembly-actions">
+            <button id="assemblyResetBtn" class="btn-secondary">🔄 重置拼組</button>
+            <button id="assemblySubmitBtn" class="banner-action-btn" style="padding: 10px 24px; font-size: 14px;">✅ 確認送出</button>
+          </div>
+        </div>
+
+        <div style="margin-top: 24px; border-top: 1px solid #F1F5F9; padding-top: 16px; display: flex; justify-content: space-between; align-items: center;">
+          <button id="speakCurrentBtn" class="btn-secondary" style="font-size: 13px;">🔊 再次朗讀</button>
+          <button id="exitQuizBtn" class="btn-secondary" style="font-size: 13px; color: #94A3B8;">退出測驗</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 國小各課專項測驗視圖 (LessonsView) -->
+    <section id="lessonsView" class="view-section">
+      <div class="card" style="margin-bottom: 20px; background: linear-gradient(135deg, #FAF5FF 0%, #EEF2FF 100%); border: 1.5px solid #DDD6FE;">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+          <div>
+            <h2 id="lessonsViewTitle" style="font-size: 20px; font-weight: 900; color: #5B21B6; display: flex; align-items: center; gap: 8px;">
+              <span>📖</span> <span id="lessonsViewTitleText">一年級 115-1 各課單獨測驗專區</span>
+            </h2>
+            <p id="lessonsViewDescText" style="font-size: 13px; color: #6D28D9; margin-top: 4px;">
+              完整收錄首課至第七課（南一、康軒、翰林三版本）及核心三拼！自由選擇課次單獨測驗，<strong>做完一樣可領取 +10 ⚡ 太空能源</strong>！
+            </p>
+          </div>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <span style="font-size: 13px; font-weight: 800; color: #6D28D9; background: #EDE9FE; padding: 6px 14px; border-radius: 20px; border: 1px solid #DDD6FE;">
+              ⚡ 測驗獎勵：做完一樣領 +10 能源
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 動態年級切換選擇器 (遵循「有增加才顯示」原則，只有具備資料的年級才會浮現) -->
+      <div id="gradeFilterBar" class="grade-filter-bar" style="display: none; margin-bottom: 20px;">
+        <span style="font-size: 13px; font-weight: 800; color: #64748B; white-space: nowrap;">選擇年級：</span>
+        <div id="gradeFilterTabs" class="grade-filter-tabs">
+          <!-- 動態由 JavaScript 依據 getActiveGrades() 渲染 -->
+        </div>
+      </div>
+
+      <!-- 課次列表網格 -->
+      <div id="lessonsGrid" class="lessons-grid">
+        <!-- 動態渲染各課卡片 -->
+      </div>
+    </section>
+
+    <!-- 易錯字複習・聽寫加強視圖 (DictationView: ㄥ、ㄣ、ㄤ、ㄡ、ㄜ、ㄝ、ㄟ、ㄛ) -->
+    <section id="dictationView" class="view-section">
+      <!-- 頂部橫幅卡片 -->
+      <div class="card" style="margin-bottom: 20px; background: linear-gradient(135deg, #FDF2F8 0%, #FCE7F3 100%); border: 1.5px solid #FBCFE8;">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+          <div>
+            <h2 style="font-size: 20px; font-weight: 900; color: #9D174D; display: flex; align-items: center; gap: 8px;">
+              <span>🎧</span> 易錯字複習・聽寫加強專區 (ㄥ、ㄣ、ㄤ、ㄡ、ㄜ、ㄝ、ㄟ、ㄛ)
+            </h2>
+            <p style="font-size: 13px; color: #BE185D; margin-top: 4px;">
+              低年級最常搞混的 8 大關鍵音！專屬聽音辨析與積木聽寫特訓，徹底攻克前後鼻音、單複韻母（ㄝ/ㄟ、ㄛ/ㄡ）與平翹舌混淆！<strong>完成特訓一樣領取 +10 ⚡ 太空能源</strong>！
+            </p>
+          </div>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <span style="font-size: 13px; font-weight: 800; color: #9D174D; background: #FCE7F3; padding: 6px 14px; border-radius: 20px; border: 1px solid #FBCFE8;">
+              ⚡ 聽寫獎勵：做完一樣領 +10 能源
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 8 大易錯音對比精講卡片網格 -->
+      <div class="card" style="margin-bottom: 20px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 8px;">
+          <h3 style="font-size: 16px; font-weight: 800; color: #1E293B;">🔍 8 大混淆音聽辨指引（點擊試聽發音）</h3>
+          <span style="font-size: 12px; color: #64748B;">注意口型、舌位與唇形收放</span>
+        </div>
+        <div id="confusionSymbolsGrid" class="confusion-symbols-grid">
+          <!-- 動態渲染 8 大音對比卡片 -->
+        </div>
+      </div>
+
+      <!-- 特訓模式操作卡片 -->
+      <div class="card" style="margin-bottom: 20px;">
+        <h3 style="font-size: 16px; font-weight: 800; color: #1E293B; margin-bottom: 12px;">🚀 聽寫加強特訓模式選擇</h3>
+        <div class="dictation-modes-grid">
+          <!-- 模式 1: 8 大音極限聽辨特訓 -->
+          <div class="dictation-mode-card">
+            <div style="font-size: 32px; margin-bottom: 8px;">⚡</div>
+            <h4 style="font-size: 16px; font-weight: 800; color: #1E293B;">8 大音符號極限聽辨</h4>
+            <p style="font-size: 12px; color: #64748B; margin: 6px 0 14px;">
+              聚焦「ㄥ、ㄣ、ㄤ、ㄡ、ㄜ、ㄝ、ㄟ、ㄛ」純符號聽音辨析與積木組裝，共 16 題高強度區辨訓練！
+            </p>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: auto; flex-wrap: wrap; gap: 8px;">
+              <span id="dictationSymbolsStat" style="font-size: 12px; font-weight: 700; color: #10B981;">已通關 0 次</span>
+              <button id="startDictationSymbolsBtn" class="btn-dictation-primary">開始符號聽辨 (+10⚡)</button>
+            </div>
+          </div>
+
+          <!-- 模式 2: 易錯詞彙聽寫大挑戰 -->
+          <div class="dictation-mode-card">
+            <div style="font-size: 32px; margin-bottom: 8px;">🌟</div>
+            <h4 style="font-size: 16px; font-weight: 800; color: #1E293B;">易錯詞彙聽寫大挑戰</h4>
+            <p style="font-size: 12px; color: #64748B; margin: 6px 0 14px;">
+              精選風箏、時鐘、太陽、樹葉、水杯、天鵝等易錯生詞，包含聽音選韻與完整拼音積木聽寫！
+            </p>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: auto; flex-wrap: wrap; gap: 8px;">
+              <span id="dictationWordsStat" style="font-size: 12px; font-weight: 700; color: #10B981;">已通關 0 次</span>
+              <button id="startDictationWordsBtn" class="btn-dictation-primary" style="background: linear-gradient(135deg, #EC4899, #DB2777);">開始詞彙聽寫 (+10⚡)</button>
+            </div>
+          </div>
+
+          <!-- 模式 3: 易錯生字詞聽選精練 (全聲調) -->
+          <div class="dictation-mode-card" style="background: #F5F3FF; border-color: #DDD6FE;">
+            <div style="font-size: 32px; margin-bottom: 8px;">🎯</div>
+            <h4 style="font-size: 16px; font-weight: 800; color: #5B21B6;">生字詞彙聽選精練 (全聲調)</h4>
+            <p style="font-size: 12px; color: #6D28D9; margin: 6px 0 14px;">
+              聚焦「ㄛ/ㄨㄛ、ㄓ/ㄗ、ㄜ/ㄦ、ㄝ/ㄟ、ㄛ/ㄡ、ㄥ/ㄣ」一～四聲各聲調聽辨，精準點選正確生字注音！
+            </p>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: auto; flex-wrap: wrap; gap: 8px;">
+              <span id="dictationPairsStat" style="font-size: 12px; font-weight: 700; color: #10B981;">已通關 0 次</span>
+              <button id="startDictationPairsBtn" class="btn-dictation-primary" style="background: linear-gradient(135deg, #8B5CF6, #6D28D9);">開始生字聽選 (+10⚡)</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 易錯生字詞彙對比庫（ㄛ/ㄨㄛ、ㄓ/ㄗ、ㄜ/ㄦ、ㄝ/ㄟ、ㄛ/ㄡ 各聲調）收合摺疊卡片 (預設收合) -->
+      <details class="card collapsible-card" style="margin-bottom: 20px;">
+        <summary class="collapsible-header">
+          <div class="collapsible-header-left">
+            <h3 style="font-size: 16px; font-weight: 800; color: #1E293B; margin: 0;">🎯 易混生字對比庫 (ㄛ/ㄨㄛ、ㄓ/ㄗ、ㄜ/ㄦ、ㄝ/ㄟ、ㄛ/ㄡ 各聲調)</h3>
+            <span class="collapsible-toggle-indicator"></span>
+          </div>
+          <span style="font-size: 12px; color: #7C3AED; font-weight: 700;">點擊晶片試聽標準詞彙發音</span>
+        </summary>
+        <div class="collapsible-content">
+          <div id="dictationPairsGrid" class="dictation-words-grid">
+            <!-- 動態渲染對比生字詞晶片 -->
+          </div>
+        </div>
+      </details>
+
+      <!-- 易錯詞彙庫快速試聽 收合摺疊卡片 (預設收合) -->
+      <details class="card collapsible-card">
+        <summary class="collapsible-header">
+          <div class="collapsible-header-left">
+            <h3 style="font-size: 16px; font-weight: 800; color: #1E293B; margin: 0;">📖 涵蓋易錯詞彙庫（點擊試聽發音）</h3>
+            <span class="collapsible-toggle-indicator"></span>
+          </div>
+          <span style="font-size: 12px; color: #BE185D; font-weight: 700;">點擊晶片試聽發音</span>
+        </summary>
+        <div class="collapsible-content">
+          <div id="dictationWordsGrid" class="dictation-words-grid">
+            <!-- 動態渲染詞彙晶片 -->
+          </div>
+        </div>
+      </details>
+    </section>
+
+    <!-- 3. 星際火箭探險視圖 (SpaceView) - 單畫面全景儀表板 -->
+    <section id="spaceView" class="view-section">
+      <div class="card space-card" id="spaceContainer">
+        
+        <!-- 頂部資訊列：左側基地名稱與簡介，右側推進燃料儀表 -->
+        <div class="space-top-bar">
+          <div class="space-top-title-area">
+            <h3 id="spaceStageName" class="space-top-stage-name">地球太空發射總部</h3>
+            <p id="spaceStageDesc" class="space-top-stage-desc">學習注音、歷史補做、聽寫加強皆可累積能量！每次消耗 10 ⚡ 即可點火升空！</p>
+          </div>
+
+          <!-- ⚡ 推進燃料儲備儀表板 -->
+          <div class="space-fuel-panel">
+            <div class="space-fuel-header">
+              <span class="space-fuel-title">⚡ 太空推進燃料</span>
+              <span class="space-fuel-stat"><strong id="spaceEnergy">0</strong> ⚡ 可用</span>
+            </div>
+            <div class="space-fuel-track">
+              <div class="space-fuel-progress" id="spaceFuelProgress" style="width: 0%;"></div>
+            </div>
+            <div class="space-fuel-tip" id="spaceFuelTip">每 10 ⚡ 即可升空探索一次，隨時出發！</div>
+          </div>
+        </div>
+
+        <!-- 主體雙欄排版：左側發射台，右側特大成就看板與探索成果 (擴大 1/3 篇幅視覺) -->
+        <div class="space-main-dashboard">
+          
+          <!-- 左側欄：發射台 -->
+          <div class="space-launch-deck">
+            <!-- 太空場景動畫區 (尺寸擴增 1/3) -->
+            <div class="space-scene" id="spaceScene">
+              <div class="space-warp-stars" id="spaceWarpStars"></div>
+              <div class="launch-pad-ring" id="launchPadRing"></div>
+              <div class="rocket-flames-container" id="rocketFlamesContainer"></div>
+              <div class="rocket-ship" id="rocketShip">🚀</div>
+            </div>
+          </div>
+
+          <!-- 右側欄：🪐 發現行星及 🌌 穿越星系 特大看板 + 探險日誌 -->
+          <div class="space-stats-deck">
+            
+            <!-- 🪐 發現行星及🌌 穿越星系 特大看板區 -->
+            <div class="space-hero-stats-board">
+              <!-- 🪐 發現行星 特大板塊 -->
+              <div class="space-hero-card space-hero-planets">
+                <div class="space-hero-header">
+                  <span class="space-hero-icon">🪐</span>
+                  <span class="space-hero-tag">未知星球</span>
+                </div>
+                <div class="space-hero-val-wrap">
+                  <span class="space-hero-val" id="spacePlanets">0</span>
+                  <span class="space-hero-unit">顆</span>
+                </div>
+                <div class="space-hero-lbl">🪐 發現行星成就</div>
+                <div class="space-hero-sub" id="spacePlanetsSub">點火升空探索各異天體</div>
+              </div>
+
+              <!-- 🌌 穿越星系 特大板塊 -->
+              <div class="space-hero-card space-hero-galaxies">
+                <div class="space-hero-header">
+                  <span class="space-hero-icon">🌌</span>
+                  <span class="space-hero-tag">超空間躍遷</span>
+                </div>
+                <div class="space-hero-val-wrap">
+                  <span class="space-hero-val" id="spaceGalaxies">0</span>
+                  <span class="space-hero-unit">個</span>
+                </div>
+                <div class="space-hero-lbl">🌌 穿越星系成就</div>
+                <div class="space-hero-sub" id="spaceGalaxiesSub">每探測 5 顆解鎖新星系</div>
+              </div>
+            </div>
+
+            <!-- 🛰️ 最新星際探險日誌卡片 (每次點火升空發現的獨特天體成果) -->
+            <div class="space-discovery-section" id="spaceDiscoverySection">
+              <div class="space-discovery-card" id="spaceDiscoveryCard">
+                <!-- 動態渲染最新發現天體成果 -->
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- 底部大按鈕操作區 (調整至下方並顯著放大) -->
+        <div class="space-bottom-action-bar">
+          <button id="launchActionBtn" class="launch-action-btn launch-btn-locked">
+            <span id="launchBtnIcon">🔒</span>
+            <span id="launchBtnText">能源充能中 (現有 0/10 ⚡)</span>
+          </button>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- 4. 注音寶庫視圖 (LibraryView) -->
+    <section id="libraryView" class="view-section">
+      <div class="card">
+        <div class="library-filter-bar">
+          <button class="filter-btn active" data-filter="all">全部單元 (126)</button>
+          <button class="filter-btn" data-filter="1">Level 1 基礎聲母</button>
+          <button class="filter-btn" data-filter="2">Level 2 進階聲母</button>
+          <button class="filter-btn" data-filter="3">Level 3 單韻母</button>
+          <button class="filter-btn" data-filter="4">Level 4 複韻母</button>
+          <button class="filter-btn" data-filter="5">Level 5 聲調與二拼</button>
+          <button class="filter-btn" data-filter="6">Level 6 115-1字詞 (79)</button>
+        </div>
+
+        <div id="libraryGrid" class="library-grid">
+          <!-- 動態渲染符號卡片 -->
+        </div>
+      </div>
+    </section>
+
+    <!-- 5. 學習報告視圖 (ReportView) -->
+    <section id="reportView" class="view-section">
+      <div class="report-grid">
+        <div class="card">
+          <h3 style="font-size: 18px; font-weight: 800; margin-bottom: 12px;">📈 近 7 日微學習紀錄</h3>
+          <ul id="historyList" class="history-list">
+            <!-- 動態繪製歷史列表 -->
+          </ul>
+        </div>
+
+        <div class="card">
+          <h3 style="font-size: 18px; font-weight: 800; margin-bottom: 12px;">⚠️ 需加強注音單元</h3>
+          <div id="weakWordsList" style="font-size: 14px; color: #475569;">
+            <!-- 弱項診斷 -->
+          </div>
+
+          <hr style="border: none; border-top: 1px solid #E2E8F0; margin: 20px 0;">
+
+          <h3 style="font-size: 16px; font-weight: 800; margin-bottom: 12px;">💾 本地資料管理 (防禦備份)</h3>
+          <div class="backup-actions">
+            <button id="exportBackupBtn" class="btn-backup">📤 匯出學習備份 JSON</button>
+            <label class="btn-backup" style="cursor: pointer;">
+              📥 匯入學習備份 JSON
+              <input type="file" id="importBackupInput" accept=".json" style="display: none;">
+            </label>
+            <button id="resetAllBtn" class="btn-backup" style="color: var(--danger); border-color: #FECACA;">🗑️ 清除所有紀錄重置 (預設密碼: 123)</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- 靜態模組依賴 (Zero-CORS / 離線可用，附強制 Cache-Busting 版本標記) -->
+  <script src="js/data.js?v=20261107_v10"></script>
+  <script src="js/audio.js?v=20261107_v10"></script>
+  <script src="js/storage.js?v=20261107_v10"></script>
+  <script src="js/scheduler.js?v=20261107_v10"></script>
+  <script src="js/quiz.js?v=20261107_v10"></script>
+  <script src="js/garden.js?v=20261107_v10"></script>
+  <script src="js/app.js?v=20261107_v10"></script>
+</body>
+</html>
